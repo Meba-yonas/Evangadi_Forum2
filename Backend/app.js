@@ -1,56 +1,46 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
-const app = express();
 const cors = require("cors");
-const port = process.env.PORT || 5500;
-app.use(cors());
 const authenticationMiddleware = require("./middleware/authenticationMiddleware");
-//db connection
 const dbconnection = require("./db/config");
 
-//image middleware
+const app = express();
+const port = process.env.PORT || 5502;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-//user router middleware file
+// Route Middleware
 const userRoutes = require("./routes/userRoute");
-
-//json middleware to extract json data
-app.use(express.json());
-
-//user router middleware
 app.use("/api/users", userRoutes);
 
-// //questions router middleware file
 const questionRoute = require("./routes/questionRoute");
-
-// //questions router middleware
 app.use("/api/questions", authenticationMiddleware, questionRoute);
 
-//answers router middleware file
 const answerRoute = require("./routes/answerRoute");
-//answers router middleware
 app.use("/api/answers", authenticationMiddleware, answerRoute);
 
-//image router middleware file
 const imageRoute = require("./routes/imageRoute");
-
-//image router middleware
 app.use("/api/images", authenticationMiddleware, imageRoute);
 
 async function start() {
   try {
-    const result = await dbconnection.execute("select 'test' ");
-    app.listen(port);
-    console.log("database connection established!");
-    console.log(`listening on ${port}`);
+    // Test the database connection
+    await dbconnection.execute("select 'test' ");
+    console.log("Database connection established!");
+
+    // Start the server after successful database connection
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
   } catch (error) {
-    console.log(error.message);
+    // Log error details and exit the process
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
   }
 }
-// app.listen(port, () => {
-//   console.log(`Server is running on port ${port}`);
-// });
-
 
 start();
