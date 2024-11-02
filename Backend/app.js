@@ -2,44 +2,42 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
-const authenticationMiddleware = require("./middleware/authenticationMiddleware");
-const dbconnection = require("./db/config");
-
 const app = express();
 const port = process.env.PORT || 5502;
+const dbconnection = require("./db/config"); // Adjust the path if necessary
 
-// Middleware
+
 app.use(cors());
-app.use(express.json());
+
+// Middleware for static images
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-// Route Middleware
+// Middleware for JSON
+app.use(express.json());
+
+// Routes
 const userRoutes = require("./routes/userRoute");
-app.use("/api/users", userRoutes);
-
 const questionRoute = require("./routes/questionRoute");
-app.use("/api/questions", authenticationMiddleware, questionRoute);
-
 const answerRoute = require("./routes/answerRoute");
-app.use("/api/answers", authenticationMiddleware, answerRoute);
-
 const imageRoute = require("./routes/imageRoute");
-app.use("/api/images", authenticationMiddleware, imageRoute);
+
+app.use("/api/users", userRoutes);
+app.use("/api/questions", questionRoute);
+app.use("/api/answers", answerRoute);
+app.use("/api/images", imageRoute);
 
 async function start() {
   try {
-    // Test the database connection
-    await dbconnection.execute("select 'test' ");
-    console.log("Database connection established!");
-
-    // Start the server after successful database connection
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
-    });
+      console.log("Connecting to the database...");
+      await dbconnection.execute("SELECT 'test'"); // Test the connection
+      app.listen(port, () => {
+          console.log(`Server is running on port ${port}`);
+      });
+      console.log("Database connection established!");
   } catch (error) {
-    // Log error details and exit the process
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+      console.error("Error during startup:", error.message);
+      console.error(error.stack); // This provides a full stack trace
+      process.exit(1);  // Exit the process with a failure code
   }
 }
 
