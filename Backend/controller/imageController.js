@@ -1,5 +1,6 @@
 const dbconnection = require("../db/config");
-const upload = require("../profileImages/imageUploader"); // Multer config for file upload
+const upload = require('../profileImages/imageUploader');
+
 
 const profileImage = (req, res) => {
   upload(req, res, async (err) => {
