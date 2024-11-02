@@ -48,9 +48,9 @@ async function start() {
     console.log(error.message);
   }
 }
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
 
 
 start();
