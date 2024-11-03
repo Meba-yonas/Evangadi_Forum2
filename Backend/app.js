@@ -23,15 +23,17 @@ app.use("/api/images", imageRoute);
 
 async function start() {
     try {
-    console.log("Testing database connection...");
-    const [rows] = await dbconnection.query("SELECT 1");
-    console.log("Database connection successful:", rows);
+        console.log("Testing database connection...");
+        const [rows] = await dbconnection.query("SELECT 1");
+        console.log("Database connection successful:", rows);
 
-    app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
-    });
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
     } catch (error) {
-        console.error("Database connection failed:", error.message);
+        console.error("Database connection failed:", error);  // Log full error object for more detail
         process.exit(1);
-    }}
-start()
+    }
+}
+
+start();
