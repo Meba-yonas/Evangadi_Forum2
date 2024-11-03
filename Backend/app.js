@@ -3,13 +3,16 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const app = express();
-const port = process.env.PORT || 5501;
+const port = process.env.PORT || 5500;
 
 const authenticationMiddleware = require("./middleware/authenticationMiddleware");
 const dbconnection = require("./db/config");
 
 // Middleware
+
 app.use(cors());
+
+;
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(express.json());
 
