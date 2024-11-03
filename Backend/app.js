@@ -22,31 +22,16 @@ app.use("/api/answers", answerRoute);
 app.use("/api/images", imageRoute);
 
 async function start() {
-  try {
-    console.log("Connecting to the database...");
-    await dbconnection.execute("SELECT 'test'");
-    console.log("Database connection established!");
+    try {
+    console.log("Testing database connection...");
+    const [rows] = await dbconnection.query("SELECT 1");
+    console.log("Database connection successful:", rows);
 
     app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
+        console.log(`Server is running on port ${port}`);
     });
-  } catch (error) {
-    console.error("Error during startup:", error.message);
-    console.error(error.stack); // Detailed stack trace for debugging
-    process.exit(1);
-  }
-}
-async function testDbConnection() {
-  try {
-    console.log("Testing database connection...");
-    await dbconnection.execute("SELECT 1 + 1 AS solution");
-    console.log("Database connection successful!");
-  } catch (error) {
-    console.error("Database connection failed:", error.message);
-    console.error(error.stack);
-  }
-}
-
-testDbConnection();
-
-start();
+    } catch (error) {
+        console.error("Database connection failed:", error.message);
+        process.exit(1);
+    }}
+start()
