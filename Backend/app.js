@@ -1,39 +1,55 @@
-// require("dotenv").config();
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
-const cors = require("cors");
 const app = express();
-const port = 5502;
+const cors = require("cors");
+const port = process.env.PORT || 5500;
+app.use(cors());
+const authenticationMiddleware = require("./middleware/authenticationMiddleware");
+//db connection
 const dbconnection = require("./db/config");
 
-app.use(cors());
+//image middleware
 app.use("/images", express.static(path.join(__dirname, "images")));
+
+//user router middleware file
+const userRoutes = require("./routes/userRoute");
+
+//json middleware to extract json data
 app.use(express.json());
 
-// Import Routes
-const userRoutes = require("./routes/userRoute");
+//user router middleware
+app.use("/api/users", userRoutes);
+
+// //questions router middleware file
 const questionRoute = require("./routes/questionRoute");
+
+// //questions router middleware
+app.use("/api/questions", authenticationMiddleware, questionRoute);
+
+//answers router middleware file
 const answerRoute = require("./routes/answerRoute");
+//answers router middleware
+app.use("/api/answers", authenticationMiddleware, answerRoute);
+
+//image router middleware file
 const imageRoute = require("./routes/imageRoute");
 
-app.use("/api/users", userRoutes);
-app.use("/api/questions", questionRoute);
-app.use("/api/answers", answerRoute);
-app.use("/api/images", imageRoute);
+//image router middleware
+app.use("/api/images", authenticationMiddleware, imageRoute);
 
+// function to start server
 async function start() {
-    try {
-        console.log("Testing database connection...");
-        const [rows] = await dbconnection.query("SELECT 1");
-        console.log("Database connection successful:", rows);
-
-        app.listen(port, () => {
-            console.log(`Server is running on port ${port}`);
-        });
-    } catch (error) {
-        console.error("Database connection failed:", error);  // Log full error object for more detail
-        process.exit(1);
-    }
+  try {
+    const result = await dbconnection.execute("select 'test' ").then(() => {
+      console.log("database connection established!");
+    });
+    app.listen(port, () => {
+      console.log(`listening on ${port}`);
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
 }
 
 start();
