@@ -1,49 +1,56 @@
+
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
-const cors = require("cors");
 const app = express();
+const cors = require("cors");
 const port = process.env.PORT || 5500;
-
+app.use(cors());
 const authenticationMiddleware = require("./middleware/authenticationMiddleware");
+//db connection
 const dbconnection = require("./db/config");
 
-// Middleware
-
-app.use(cors());
-
-;
+//image middleware
 app.use("/images", express.static(path.join(__dirname, "images")));
+
+//user router middleware file
+const userRoutes = require("./routes/userRoute");
+
+//json middleware to extract json data
 app.use(express.json());
 
-// Routes
-const userRoutes = require("./routes/userRoute");
+//user router middleware
 app.use("/api/users", userRoutes);
 
+// //questions router middleware file
 const questionRoute = require("./routes/questionRoute");
+
+// //questions router middleware
 app.use("/api/questions", authenticationMiddleware, questionRoute);
 
+//answers router middleware file
 const answerRoute = require("./routes/answerRoute");
+//answers router middleware
 app.use("/api/answers", authenticationMiddleware, answerRoute);
 
+//image router middleware file
 const imageRoute = require("./routes/imageRoute");
+
+//image router middleware
 app.use("/api/images", authenticationMiddleware, imageRoute);
 
-// Function to start server
+// function to start server
 async function start() {
-    try {
-        // Test the database connection
-        await dbconnection.execute("select 'test'");
-        console.log("Database connection established!");
-
-        // Start the server
-        app.listen(port, () => {
-            console.log(`Server is running on port ${port}`);
-        });
-    } catch (error) {
-        console.error("Database connection failed:", error.message);
-        process.exit(1); // Exit the application if the database connection fails
-    }
+  try {
+    const result = await dbconnection.execute("select 'test' ").then(() => {
+      console.log("database connection established!");
+    });
+    app.listen(port, () => {
+      console.log(`listening on ${port}`);
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
 }
 
 start();
