@@ -4,7 +4,7 @@ const express = require("express");
 const path = require("path");
 const app = express();
 const cors = require("cors");
-const port = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000
 app.use(cors());
 const authenticationMiddleware = require("./middleware/authenticationMiddleware");
 //db connection
@@ -47,7 +47,7 @@ async function start() {
     const result = await dbconnection.execute("select 'test' ").then(() => {
       console.log("database connection established!");
     });
-    app.listen(port, () => {
+    app.listen(PORT, () => {
       console.log(`listening on ${port}`);
     });
   } catch (error) {
